@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+
+    {% if request.user.is_authenticated %}
+        <div class="glassy-box" class="avg">
+            <h1>Welcome to Shelf-Buddies {{request.user}}</h1>
+            <h2><a href="{% url 'logout' %}">Logout</a></h2>
+        </div>
+   {% else %}
+        <div class="glassy-box" class="avg">
+            <h2>Welcome to Shelf-Buddies</h2>
+            <hr>
+            <a href="{% url 'login_view' %}">Login</a>
+            <p>If you don't have an account <a href="{% url 'signup' %}">Sign Up</a></p>
+        </div>
+        {% endif %}
+
+    {% if request.user.is_authenticated %}
+        {% for my_object in book %}
+            <p>Title : {{ my_object.title }}</p>
+            <p>Description : {{ my_object.description }}</p>
+            <select name="read_states">
+                <option value="Want to Read">Want to Read</option>
+                <option value="Reading">Reading</option>
+                <option value="Read">Read</option>
+            </select>            
+        {% endfor %}
+    {% else %}
+        <p class="avg">You must be logged in to see data</p>
+    {% endif %}
+
+    <script>
+        window.addEventListener("load", function() {
+            var overlay = document.querySelector(".bg-overlay");
+            overlay.style.opacity = "1";
+          });
+    </script>
+    
+{% endblock %}

@@ -1,0 +1,146 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.cdnfonts.com/css/gabriola" rel="stylesheet">    
+    <title>Shelf-Buddies</title>
+    <style>
+
+        a {
+            color: blue;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Gabriola', sans-serif;
+            font-size: 25px;
+            }
+        .container {
+            display: flex;
+        }
+        .left-side {
+            background-color: #192A51;
+            color: white;
+            width: 40%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .right-side {
+            width: 60%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        /* styles.css */
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        img{
+            margin-bottom: 30px;
+            height: auto;
+            max-width: 400px;
+            width: 100%;
+        }
+        .text{
+            top: 50%;
+            left: 50%;
+        }
+        .avg{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            0% {opacity: 0;}
+            100% {opacity: 1;}
+        }
+        
+        .glassy-box {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.55);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out;
+            animation-delay: 2s; /* Adjust this value to change the delay */
+            animation-fill-mode: forwards;
+        }
+        .bg-image {
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out;
+            animation-delay: 0.5s; /* Adjust this value to change the delay */
+            animation-fill-mode: forwards;
+
+            background-image: url("/static/images/background.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+          }
+          
+          .bg-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+          }
+          
+    </style>
+
+</head>
+
+<body>
+    {% block content %}
+    
+    {% endblock %}
+</body>
+</html>

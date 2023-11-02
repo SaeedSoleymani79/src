@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <div class="left-side">
+        <img src="/static/images/logo.png" alt="Website Logo">
+        <h2 class="text">Welcome to Shelf-Buddies</h2>
+    </div>
+    <div class="right-side">
+        <form method="post">
+            {% csrf_token %}
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            <br>
+            <label for="username">Password:</label>
+            <input type="password" name="password" id="password" required>
+            <br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</div>
+
+{% endblock %}

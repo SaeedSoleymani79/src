@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="left-side">
+        <img src="/static/images/logo.png" alt="Website Logo">
+            <h2 style="margin-bottom: 70px;">Welcome to Shelf-Buddies</h2>
+    </div>
+    <div class="right-side">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.username.label_tag }} {{ form.username }}
+            {{ form.email.label_tag }} {{ form.email }}
+            {{ form.password1.label_tag }} {{ form.password1 }}
+            {{ form.password2.label_tag }} {{ form.password2 }}
+            <input type="submit" value="Sign Up">
+        </form>
+    </div>
+</div>
+
+{% endblock %}

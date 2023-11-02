@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* CSS code */
+
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap');
+
+    @media screen and (max-width: 600px) {
+    .navbar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .profile {
+        margin-left: 0;
+        width: 100%;
+    }
+    }
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Roboto, sans-serif;
+        }
+        .navbar {
+            width: 15%;
+            height: 100%;
+            position: fixed;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1em;
+        }
+        .navbar div {
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar a {
+            text-decoration: none;
+            color: black;
+            margin-bottom: 1em;
+        }
+        .navbar .middle {
+            margin-top: 2em;
+        }
+        .navbar .bottom {
+            margin-top: auto;
+            margin-bottom: 5px;
+        }
+        .fa {
+        margin-right: 5px;
+        }
+
+        .fa-home {
+        color: #2a2a2a;
+        }
+
+        .fa-search {
+        color: #2a2a2a;
+        }
+
+        .fa-book {
+        color: #2a2a2a;
+        }
+
+        .fa-plus {
+        color: #2a2a2a;
+        }
+
+        .fa-bookmark {
+        color: #2a2a2a;
+        }
+
+        .fa-cog {
+        color: #2a2a2a;
+        }
+
+        .fa-sign-out {
+        color: #2a2a2a;
+        }
+
+        .profile {
+            margin-left: 20%;
+            padding: 20px;
+            padding-left: 5%;
+        }
+        .profile-bottom {
+            display: flex;
+            justify-content: space-between;
+            max-width: fit-content;
+            margin-left: 60px;
+            margin-top: 20px;
+        }
+
+        .profile-bottom p {
+            width: fit-content;
+            margin-left: 7px;
+        }
+        .profile-bottom p:hover{
+            color: #0066cc;
+        }
+        .profile img {
+            border-radius: 30px;
+            margin-right: 20px;
+            height: 150px; /* Adjust as needed */
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .book-list {
+            border-radius: 10px;
+            box-shadow: rgb(56, 56, 56) 5px 1px 9px -5px;
+            margin-bottom: 15px;
+            margin-top: 15px;
+            height: 75px;
+        }
+        .book-list-sec {
+            justify-content: space-between;
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap');
+
+        .btn{
+
+        font-family: Roboto, sans-serif;
+        font-weight: 0;
+        font-size: 14px;
+        color: #6e6e6e;
+        background-color: #fcfcfc;
+        padding: 7px 20px;
+        border: solid #ffffff 2px;
+        box-shadow: rgb(56, 56, 56) 2px 0px 18px -6px;
+        border-radius: 50px;
+        transition : 610ms;
+        transform: translateY(0);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        cursor: pointer;
+        }
+
+        .btn:hover{
+
+        transition : 610ms;
+        padding: 10px 23px;
+        transform : translateY(-0px);
+        background-color: #fff;
+        color: #0066cc;
+        border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <!-- Top Navbar content -->
+        <div>
+            <img src="/static/images/logo.png" alt="Logo">
+            <br><br>
+            <a href="{% url 'profile' profile.user.username %}"><i class="fa fa-home"></i> Reader Page</a>
+            <a href="#"><i class="fa fa-search"></i> Search</a>
+            <a href="#"><i class="fa fa-book"></i> My Library</a>
+        </div>
+    
+        <!-- Middle Navbar content -->
+        <div class="middle">
+            <a href="#"><i class="fa fa-plus"></i> Create New</a>
+            <a href="#"><i class="fa fa-bookmark"></i> Favourite</a>
+        </div>
+    
+        <!-- Bottom Navbar content -->
+        <div class="bottom">
+            <a href="#"><i class="fa fa-cog"></i> Settings</a>
+            <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Log Out</a>
+        </div>
+    </div>
+    <div class="profile">
+        <div class="profile-top" style="display: flex; align-items: center;">
+            <img src={{ profile.user.profile_image }} alt="User">
+            <div style="display: flex; flex-direction: column;">
+                <div class="user-info" style="margin-left: 20px;">
+                    <h2>{{ profile.user.username }}</h2>
+                    <button class="btn" style="margin-left: 20px;">Edit Profile</button>
+                </div>
+                <div class="profile-bottom" style="margin-left: 20px;">
+                    <a href="#"><p style="margin-right: 20px;">{{ profile.user.following.count }} following</p></a>
+                    <a href="#"><p>{{ profile.followers.count }} followers</p></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Book Lists -->
+        <div class="book-list-sec">        
+            <div class="book-list">
+                <img src="book.jpg" alt="Book">
+                <p>Reading</p>
+            </div>
+            <div class="book-list">
+                <img src="book.jpg" alt="Book">
+                <p>Want to Read</p>
+            </div>
+            <div class="book-list">
+                <img src="book.jpg" alt="Book">
+                <p>Already Read</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript code -->
+    <script type="text/javascript">
+      // Your JavaScript goes here
+    </script>
+
+</body>
+</html>
+<!---
+I'm glad to hear that it worked! Here's how you can customize the code further:
+
+1. **Adjusting Spaces**: You can adjust the spaces between elements using CSS properties like `margin` and `padding`. For example, if you want to increase the space between the navbar links, you could increase the `margin-bottom` value in the `.navbar a` rule.
+
+2. **Adding Icons**: To add icons before the sidebar navigation links, you can use an icon library like Font Awesome. First, include the Font Awesome CDN link in your HTML file. Then, you can add an `<i>` tag with the appropriate class names before each link text. Here's an example:
+
+```html
+<a href="#"><i class="fas fa-home"></i> Home Page</a>
+```
+In this example, `fas fa-home` is the class for the home icon in Font Awesome. You can find the class for each icon in the Font Awesome icon gallery.
+
+Remember, HTML and CSS are very flexible, so there are many ways to achieve your desired layout and design. Feel free to experiment with different properties and values to see what works best for you. Happy coding! 😊
+-->
