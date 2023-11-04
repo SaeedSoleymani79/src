@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         /* CSS code */
@@ -154,6 +155,44 @@
         color: #0066cc;
         border: none;
         }
+
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px); 
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
     </style>
 </head>
 <body>
@@ -185,11 +224,51 @@
             <div style="display: flex; flex-direction: column;">
                 <div class="user-info" style="margin-left: 20px;">
                     <h2>{{ profile.user.username }}</h2>
-                    <button class="btn" style="margin-left: 20px;">Edit Profile</button>
+                    {% if request.user.is_authenticated %}
+                        {% if request.user == profile.user %}
+                            <!-- Edit Profile Button -->
+                            <button class="btn" style="margin-left: 20px;">Edit Profile</button>
+                        {% elif request.user in profile.followers.all %}
+                            <!-- Unfollow Button -->
+                            <form method="POST" action="{% url 'unfollow_user' profile.user.username %}">
+                                {% csrf_token %}
+                                <button class="btn" style="margin-left: 20px;">Unfollow</button>
+                            </form>
+                        {% else %}
+                            <!-- Follow Button -->
+                            <form method="POST" action="{% url 'follow_user' profile.user.username %}">
+                                {% csrf_token %}
+                                <button class="btn" style="margin-left: 20px;">Follow</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
                 </div>
                 <div class="profile-bottom" style="margin-left: 20px;">
-                    <a href="#"><p style="margin-right: 20px;">{{ profile.user.following.count }} following</p></a>
-                    <a href="#"><p>{{ profile.followers.count }} followers</p></a>
+                    <!-- Followers Link -->
+                    <a style="margin-right: 20px;" id="followersLink" href="{% url 'followers' profile.user.username %}" >{{ profile.followers.count }} followers</a>
+
+                    <!-- Followers Modal -->
+                    <div id="followersModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">×</span>
+                            {% for follower in profile.followers.all %}
+                                <a href={% url 'profile' follower.username%}><p>{{ follower.username }}</p></a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Following Link -->
+                    <a id="followingLink" href="{% url 'following' profile.user.username %}" id="followingLink">{{ profile.following.count }} following</a>
+
+                    <!-- Following Modal -->
+                    <div id="followingModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">×</span>
+                            {% for followed_user in profile.following.all %}
+                                <a href={% url 'profile' followed_user.username%}><p>{{ followed_user.username }}</p></a>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -210,11 +289,39 @@
             </div>
         </div>
     </div>
+    
+    
+
 
     <!-- JavaScript code -->
-    <script type="text/javascript">
-      // Your JavaScript goes here
+    <script>
+    $(document).ready(function() {
+        $('#followersLink').click(function(event) {
+            console.log('Followers link clicked');
+            event.preventDefault();
+            $('#followersModal').show();
+        });
+        
+        $('#followingLink').click(function(event) {
+            console.log('Following link clicked');
+            event.preventDefault();
+            $('#followingModal').show();
+        });
+
+        $('.close').click(function() {
+            $('.modal').hide();
+        });
+
+        $(window).click(function(event) {
+            if ($(event.target).hasClass('modal')) {
+                $('.modal').hide();
+            }
+        });
+    });
+        
+        
     </script>
+                
 
 </body>
 </html>

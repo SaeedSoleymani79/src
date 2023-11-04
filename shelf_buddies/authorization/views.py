@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.http import Http404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext as _
@@ -38,24 +39,6 @@ def logout_view(request):
     logout(request)
     return redirect("home_view")
 
-'''
-def signup_view(request):
-
-    if request.method == 'GET':
-        form = registerForm()
-        return render(request, 'signup.html', {'form': form})
-    
-    if request.method == 'POST':
-        form = registerForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-            login_view(request)
-            return redirect('posts')
-        else:
-            return render(request, 'signup.html', {'form': form})
-            '''
 
 
 
@@ -99,20 +82,59 @@ def profile_view(request, username):
 
     return render(request, 'authorization/user_profile2.html', context)
 
+from django.shortcuts import redirect
+
 def follow_user(request, username):
     if request.user.is_authenticated:
         user_to_follow = User.objects.get(username=username)
         user_profile = Userprofile.objects.get(user=request.user)
-        user_profile.following.add(user_to_follow)
+        if user_to_follow != request.user:  # Prevent users from following themselves
+            user_to_follow.profile.followers.add(request.user)  # Add the follower to the followed user's followers list
         return redirect('profile', username=username)
     else:
         return redirect('login')
-    
+
 def unfollow_user(request, username):
     if request.user.is_authenticated:
         user_to_unfollow = User.objects.get(username=username)
         user_profile = Userprofile.objects.get(user=request.user)
-        user_profile.following.remove(user_to_unfollow)
+        user_to_unfollow.profile.followers.remove(request.user)  # Remove the follower from the unfollowed user's followers list
         return redirect('profile', username=username)  # Redirect to the user's profile you unfollowed
     else:
         return redirect('login')
+
+
+def followers_view(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404("User does not exist")
+    followers = user.profile.followers.all()
+    return render(request, 'authorization/followers.html', {'followers': followers})
+
+def following_view(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        following = user.profile.following.all()
+    return render(request, 'authorization/following.html', {'following': following})
+
+
+    '''
+def signup_view(request):
+
+    if request.method == 'GET':
+        form = registerForm()
+        return render(request, 'signup.html', {'form': form})
+    
+    if request.method == 'POST':
+        form = registerForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login_view(request)
+            return redirect('posts')
+        else:
+            return render(request, 'signup.html', {'form': form})
+            '''

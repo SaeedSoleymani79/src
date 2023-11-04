@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from book.views import home_view,insert_book,success_url
-from authorization.views import login_view, logout_view, signup_view, terms_view, profile_view, follow_user, unfollow_user
+from authorization.views import login_view, logout_view, signup_view, terms_view, profile_view, follow_user, unfollow_user, followers_view , following_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('follow/<str:username>/', follow_user, name='follow_user'),
     path('unfollow/<str:username>/', unfollow_user, name='unfollow_user'),
     path('signup/', signup_view, name='signup'),
+    path('profile/followers/<str:username>/', followers_view, name='followers'),
+    path('profile/following/<str:username>/', following_view, name='following'),
     path('terms/', terms_view, name='terms'),
     path('', include('authorization.urls')),
 ]
