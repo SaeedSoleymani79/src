@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,6 +20,15 @@
         width: 100%;
     }
     }
+
+        a:hover {
+            transition : 610ms;
+            transform : translateY(-0px);
+            background-color: #fff;
+            color: #0066cc;
+            border: none;
+        }
+
         body {
             margin: 0;
             height: 100vh;
@@ -51,6 +61,71 @@
             margin-top: auto;
             margin-bottom: 5px;
         }
+
+        #search-sidebar {
+            margin-left: 30px;
+            position: fixed;
+            width: 200px;
+            height: 100%;
+            overflow: auto;
+            background-color: #f2f2f2;
+            left: 15%; /* Adjust this value to match the width of your navbar */
+            transform: translateX(-100%);
+            transition: transform 5s ease; /* Add transition */
+        }
+        
+        #search-results a{
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            color: black;
+            text-decoration: none;
+        }
+
+        #search-results a:hover {
+            background-color: #f2f2f2;
+        }
+                
+        #overlay {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+        .loader {
+            width: 10px;
+            height: 15px;
+            border-radius: 30%;
+            display: block;
+            margin:20px auto;
+            position: relative;
+            color: #000;
+            box-sizing: border-box;
+            animation: animloader 1s linear infinite alternate;
+          }
+          
+          @keyframes animloader {
+            0% {
+              box-shadow: -38px -12px ,  -14px 0,  14px 0, 38px 0;
+            }
+            33% {
+              box-shadow: -38px 0px, -14px -12px,  14px 0, 38px 0;
+            }
+            66% {
+              box-shadow: -38px 0px , -14px 0, 14px -12px, 38px 0;
+            }
+            100% {
+              box-shadow: -38px 0 , -14px 0, 14px 0 , 38px -12px;
+            }
+          }
+
+
         .fa {
         margin-right: 5px;
         }
@@ -84,7 +159,7 @@
         }
 
         .profile {
-            margin-left: 20%;
+            margin-left: 15%;
             padding: 20px;
             padding-left: 5%;
         }
@@ -193,6 +268,14 @@
             cursor: pointer;
         }
         
+        .line {
+            width: 100%; /* Adjust as needed */
+            height: 2px; /* Adjust as needed */
+            background-color: black; /* Adjust as needed */
+            margin: 20px 0; /* Adjust as needed */
+            box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.2);
+        }
+        
     </style>
 </head>
 <body>
@@ -201,8 +284,13 @@
         <div>
             <img src="/static/images/logo.png" alt="Logo">
             <br><br>
-            <a href="{% url 'profile' profile.user.username %}"><i class="fa fa-home"></i> Reader Page</a>
-            <a href="#"><i class="fa fa-search"></i> Search</a>
+            <a href="{% url 'profile' request.user.username %}"><i class="fa fa-home"></i> Reader Page</a>
+            <a id="search-link" href="#"><i class="fa fa-search"></i> Search</a>
+            <div id="search-sidebar" style="display: none;">
+                <input type="text" id="search-input" placeholder="Search users...">
+            <div id="search-results">
+            </div>
+            </div>
             <a href="#"><i class="fa fa-book"></i> My Library</a>
         </div>
     
@@ -214,20 +302,32 @@
     
         <!-- Bottom Navbar content -->
         <div class="bottom">
-            <a href="#"><i class="fa fa-cog"></i> Settings</a>
+            <a id='settingslink' href="#"><i class="fa fa-cog"></i> Settings</a>
+            <!-- Settings Modal -->
+            <div id="settingsModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">×</span>
+                    <a href={% url 'password_change' %}><p>change password</p></a>
+                </div>
+            </div>
+
             <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Log Out</a>
         </div>
     </div>
     <div class="profile">
         <div class="profile-top" style="display: flex; align-items: center;">
-            <img src={{ profile.user.profile_image }} alt="User">
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" alt="User">
+            {% else %}
+                <img src="{% static 'images/image.png' %}" alt="User">
+            {% endif %}
             <div style="display: flex; flex-direction: column;">
                 <div class="user-info" style="margin-left: 20px;">
                     <h2>{{ profile.user.username }}</h2>
                     {% if request.user.is_authenticated %}
                         {% if request.user == profile.user %}
                             <!-- Edit Profile Button -->
-                            <button class="btn" style="margin-left: 20px;">Edit Profile</button>
+                            <button class="btn" style="margin-left: 20px;"><a href={% url 'edit_profile' profile.user.username %}>Edit Profile</a></button>
                         {% elif request.user in profile.followers.all %}
                             <!-- Unfollow Button -->
                             <form method="POST" action="{% url 'unfollow_user' profile.user.username %}">
@@ -270,11 +370,22 @@
                         </div>
                     </div>
                 </div>
+                <!-- Bio -->
+                <div style="margin-left:20px; margin-top: 20px;" class="bio-sec">
+                    {% if profile.profile_bio %}
+                        <p>{{ profile.profile_bio }}</p>
+                    {% else %}
+                        <br>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+        <!-- Line -->
+        <div class="line"></div>
         
         <!-- Book Lists -->
-        <div class="book-list-sec">        
+        <div class="book-list-sec" style="margin-top: 50px;">        
             <div class="book-list">
                 <img src="book.jpg" alt="Book">
                 <p>Reading</p>
@@ -289,13 +400,12 @@
             </div>
         </div>
     </div>
-    
-    
 
 
     <!-- JavaScript code -->
     <script>
     $(document).ready(function() {
+
         $('#followersLink').click(function(event) {
             console.log('Followers link clicked');
             event.preventDefault();
@@ -311,17 +421,64 @@
         $('.close').click(function() {
             $('.modal').hide();
         });
-
+        
         $(window).click(function(event) {
             if ($(event.target).hasClass('modal')) {
                 $('.modal').hide();
             }
         });
     });
+    $(document).ready(function() {
+        // When the user clicks the button, open the modal 
+        $('#settingslink').click(function() {
+            $('#settingsModal').show();
+        });
+
+        // When the user clicks on <span> (x), close the modal
+        $('.close').click(function() {
+            $('#settingsModal').hide();
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        $(window).click(function(event) {
+            if ($(event.target).is('#settingsModal')) {
+                $('#settingsModal').hide();
+            }
+        });
+    });
         
-        
+    $(document).ready(function(){
+        $('#search-link').on('click', function(e) {
+            e.preventDefault();
+            if ($('#search-sidebar').css('display') === 'none') {
+                $('#search-sidebar').css('transform', 'translateX(-100px)'); // Slide out
+                $('#search-sidebar').css('display', 'block'); // Show if it's hidden
+                $('#search-sidebar').css('transform', 'translateX(0px)'); // Slide out
+                $('#overlay').show(); // Show overlay
+            } else {
+                $('#search-sidebar').css('display', 'none'); // Slide in if it's visible
+                $('#overlay').hide(); // Hide overlay
+            }
+        });
+    
+        $('#search-input').on('input', function(e){
+            $.ajax({
+                url: '/search/',  // Update with your search view URL
+                data: {
+                  'q': $('#search-input').val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('#search-results').empty();
+                    $.each(data, function(index, element) {
+                        $('#search-results').append('<a href="' + element.url + '">' + element.username + '</a><br>');
+                    });
+                }
+            });
+        });
+    });    
     </script>
-                
+
 
 </body>
 </html>

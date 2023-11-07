@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Other head elements... -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        .loader {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: block;
+            margin:15px auto;
+            position: relative;
+            color: #000;
+            box-sizing: border-box;
+            animation: animloader 1s linear infinite alternate;
+          }
+          
+          @keyframes animloader {
+            0% {
+              box-shadow: -38px -12px ,  -14px 0,  14px 0, 38px 0;
+            }
+            33% {
+              box-shadow: -38px 0px, -14px -12px,  14px 0, 38px 0;
+            }
+            66% {
+              box-shadow: -38px 0px , -14px 0, 14px -12px, 38px 0;
+            }
+            100% {
+              box-shadow: -38px 0 , -14px 0, 14px 0 , 38px -12px;
+            }
+          }
+    </style>
+</head>
+<body>
+    <!-- Other body elements... -->
+
+    <input type="text" id="search-box" placeholder="Search users...">
+    <div id="search-results"></div>
+    
+    
+    <script>
+        $('#search-box').on('input', function() {
+            var query = $(this).val();
+            if (query.length > 0) {
+                $('#search-results').html('<div class="loader"></div>'); // Show loading animation
+                setTimeout(function() { // Add delay
+                    $.get('/search/', {q: query}, function(data) {
+                        var users = JSON.parse(data);
+                        var html = '';
+                        for (var i = 0; i < users.length; i++) {
+                            html += '<p>' + users[i].fields.username + '</p>';
+                        }
+                        $('#search-results').html(html); // Replace loading animation with search results
+                    });
+                }, 500); // Delay in milliseconds
+            } else {
+                $('#search-results').html(''); // Clear search results and loading animation
+            }
+        });
+    </script>
+</body>
+</html>

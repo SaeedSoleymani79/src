@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.urls import reverse
 from django.http import Http404
+from .decorators import anonymous_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext as _
 import datetime
-from .forms import registerForm
+from .forms import registerForm, UserUpdateForm, UserUpdateProfileForm, CustomPasswordResetForm, CustomChangePasswordForm
 from authorization.models import Userprofile, Post
 from django.contrib.auth.models import User
 
@@ -29,7 +32,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             print(username, 'has logged in at', datetime.datetime.now() ) # to see who has logged in in cmd
-            return redirect('home_view') #redirect(<name of home_page_view in urls.py>)
+            return redirect(reverse('profile', kwargs={'username':username})) #redirect(<name of home_page_view in urls.py>)
         else:
             return HttpResponse('Could not log you in')
     
@@ -58,6 +61,8 @@ def signup_view(request):
 def terms_view(request):
     return render(request, 'authorization/terms.html')
 
+def privacy_policy_view(request):
+    return render(request, 'authorization/privacy_policy.html')
 
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
@@ -82,7 +87,18 @@ def profile_view(request, username):
 
     return render(request, 'authorization/user_profile2.html', context)
 
-from django.shortcuts import redirect
+def edit_profile(request, username):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = UserUpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect(reverse('profile', args=[request.user.username]))
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = UserUpdateProfileForm(instance=request.user.profile)
+    return render(request, 'authorization/edit_profile.html', {'user_form': user_form, 'profile_form': profile_form})
 
 def follow_user(request, username):
     if request.user.is_authenticated:
@@ -90,6 +106,9 @@ def follow_user(request, username):
         user_profile = Userprofile.objects.get(user=request.user)
         if user_to_follow != request.user:  # Prevent users from following themselves
             user_to_follow.profile.followers.add(request.user)  # Add the follower to the followed user's followers list
+            user_profile.following.add(user_to_follow)  # Add the followed user to the follower's following list
+            user_profile.following_count = user_profile.following.count()  # Update the following count
+            user_profile.save()
         return redirect('profile', username=username)
     else:
         return redirect('login')
@@ -99,10 +118,12 @@ def unfollow_user(request, username):
         user_to_unfollow = User.objects.get(username=username)
         user_profile = Userprofile.objects.get(user=request.user)
         user_to_unfollow.profile.followers.remove(request.user)  # Remove the follower from the unfollowed user's followers list
+        user_profile.following.remove(user_to_unfollow)  # Remove the unfollowed user from the follower's following list
+        user_profile.following_count = user_profile.following.count()  # Update the following count
+        user_profile.save()
         return redirect('profile', username=username)  # Redirect to the user's profile you unfollowed
     else:
         return redirect('login')
-
 
 def followers_view(request, username):
     try:
@@ -120,21 +141,30 @@ def following_view(request, username):
     return render(request, 'authorization/following.html', {'following': following})
 
 
-    '''
-def signup_view(request):
-
-    if request.method == 'GET':
-        form = registerForm()
-        return render(request, 'signup.html', {'form': form})
-    
+@anonymous_required(redirect_url='/')
+def password_reset(request):
     if request.method == 'POST':
-        form = registerForm(request.POST)
+        form = CustomPasswordResetForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-            login_view(request)
-            return redirect('posts')
-        else:
-            return render(request, 'signup.html', {'form': form})
-            '''
+            form.save()
+            return redirect('password_reset_done')
+    else:
+        form = CustomPasswordResetForm()
+    return render (request, 'authorization/password_reset_form.html', {'form': form})
+    
+def password_reset_done(request):
+    return render(request, 'authorization/password_reset_done.html')
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = CustomChangePasswordForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('password_change_done')
+    else:
+        form = CustomChangePasswordForm(request.user)
+    return render(request, 'authorization/password_change_form.html', {'form': form})
+
+def password_change_done(request):
+    return render(request, 'authorization/password_change_done.html')

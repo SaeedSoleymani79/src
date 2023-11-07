@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # my_apps
     'book',
     'authorization',
+    'search',
 ]
 
 MIDDLEWARE = [
