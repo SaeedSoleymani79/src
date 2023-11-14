@@ -18,14 +18,12 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from book.views import home_view,insert_book,success_url
+from book.views import home_view
 from authorization.views import login_view, logout_view, signup_view, privacy_policy_view,terms_view, profile_view, edit_profile,follow_user, unfollow_user, followers_view , following_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home_view'),
-    path('insert/', insert_book, name='insert_book'),
-    path('inser/success', success_url, name='success_url'),
     path('login/', login_view, name='login_view'),
     path('logout/', logout_view, name='logout'),
     path('profile/<str:username>/', profile_view, name='profile'),
@@ -39,5 +37,8 @@ urlpatterns = [
     path('privacy_policy/', privacy_policy_view, name='privacy_policy'),
     path('', include('authorization.urls')),
     path('search/', include('search.urls')),
+    path('api/', include('api.urls')),
+    path('books/', include('book.urls')),
+    path('chat/', include('chat.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

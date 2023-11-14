@@ -1,0 +1,10 @@
+<form method="get">
+    <input type="text" name="q" placeholder="Search books...">
+    <input type="submit" value="Search">
+</form>
+
+{% for book in results %}
+    <a href="{% url 'book_detail2' id=book.id %}">{{ book.title }}</a>
+    <p>Authors: {{ book.authors }}</p>
+    <p>ISBN: {{ book.isbn }}</p>
+{% endfor %}

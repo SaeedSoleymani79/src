@@ -36,7 +36,7 @@ def login_view(request):
         else:
             return HttpResponse('Could not log you in')
     
-    return render(request, 'authorization/login.html')
+    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)
@@ -56,13 +56,13 @@ def signup_view(request):
             return redirect('home_view')
     else:
         form = registerForm()
-    return render(request, 'authorization/signup.html', {'form': form})
+    return render(request, 'signup.html', {'form': form})
 
 def terms_view(request):
-    return render(request, 'authorization/terms.html')
+    return render(request, 'terms.html')
 
 def privacy_policy_view(request):
-    return render(request, 'authorization/privacy_policy.html')
+    return render(request, 'privacy_policy.html')
 
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
@@ -85,7 +85,7 @@ def profile_view(request, username):
         'posts': posts,
     }
 
-    return render(request, 'authorization/user_profile2.html', context)
+    return render(request, 'user_profile2.html', context)
 
 def edit_profile(request, username):
     if request.method == 'POST':
@@ -98,7 +98,7 @@ def edit_profile(request, username):
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserUpdateProfileForm(instance=request.user.profile)
-    return render(request, 'authorization/edit_profile.html', {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, 'edit_profile.html', {'user_form': user_form, 'profile_form': profile_form})
 
 def follow_user(request, username):
     if request.user.is_authenticated:
@@ -131,14 +131,14 @@ def followers_view(request, username):
     except User.DoesNotExist:
         raise Http404("User does not exist")
     followers = user.profile.followers.all()
-    return render(request, 'authorization/followers.html', {'followers': followers})
+    return render(request, 'followers.html', {'followers': followers})
 
 def following_view(request, username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         following = user.profile.following.all()
-    return render(request, 'authorization/following.html', {'following': following})
+    return render(request, 'following.html', {'following': following})
 
 
 @anonymous_required(redirect_url='/')
@@ -150,10 +150,10 @@ def password_reset(request):
             return redirect('password_reset_done')
     else:
         form = CustomPasswordResetForm()
-    return render (request, 'authorization/password_reset_form.html', {'form': form})
+    return render (request, 'password_reset_form.html', {'form': form})
     
 def password_reset_done(request):
-    return render(request, 'authorization/password_reset_done.html')
+    return render(request, 'password_reset_done.html')
 
 @login_required
 def change_password(request):
@@ -164,7 +164,7 @@ def change_password(request):
             return redirect('password_change_done')
     else:
         form = CustomChangePasswordForm(request.user)
-    return render(request, 'authorization/password_change_form.html', {'form': form})
+    return render(request, 'password_change_form.html', {'form': form})
 
 def password_change_done(request):
-    return render(request, 'authorization/password_change_done.html')
+    return render(request, 'password_change_done.html')

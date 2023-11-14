@@ -4,6 +4,6 @@ from django.contrib import admin
 
 #superuser  = user = raha0837 password = rahashelf
 
-from .models import Book
+from .models import UserBookmark
 
-admin.site.register(Book)
+admin.site.register(UserBookmark)

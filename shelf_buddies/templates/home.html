@@ -6,8 +6,9 @@
 
     {% if request.user.is_authenticated %}
         <div class="glassy-box" class="avg">
-            <h1>Welcome to Shelf-Buddies {{request.user}}</h1>
-            <h2><a href="{% url 'logout' %}">Logout</a></h2>
+            <h1>Welcome to Shelf-Buddies</h1>
+            <a href="{% url 'profile' request.user.username %}">{{request.user}}</a>            
+            <a href="{% url 'logout' %}">Logout</a>
         </div>
    {% else %}
         <div class="glassy-box" class="avg">

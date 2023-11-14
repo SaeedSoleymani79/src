@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{% if book.volumeInfo.title %}{{ book.volumeInfo.title }}{% else %}No title available{% endif %}</h1>
+<h2>{% if book.volumeInfo.authors %}by {{ book.volumeInfo.authors.0 }}{% else %}No authors available{% endif %}</h2>
+{% if book.volumeInfo.imageLinks.thumbnail %}<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Cover image">{% else %}No cover image available{% endif %}
+
+
+<!-- Bookmarking Dropdown -->
+<div class="dropdown">
+    <button class="dropdown-button">Bookmark</button>
+    <div class="dropdown-menu">
+        <a href="{% url 'bookmark' book.id book_slug=book.slug %}" data-status="want_to_read">Want to Read</a>
+        <a href="{% url 'bookmark' book.id book_slug=book.slug %}" data-status="currently_reading">Currently Reading</a>
+        <a href="{% url 'bookmark' book.id book_slug=book.slug %}" data-status="already_read">Already Read</a>
+    </div>
+</div>
+
+<script>
+    // JavaScript to handle the dropdown
+    const dropdownButton = document.querySelector('.dropdown-button');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+
+    dropdownButton.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('show');
+    });
+
+    // Handle option selection (you can adapt this based on your needs)
+    dropdownMenu.addEventListener('click', (event) => {
+        if (event.target.tagName === 'A') {
+            const selectedStatus = event.target.dataset.status;
+            console.log(`Selected status: ${selectedStatus}`);
+            // Send an AJAX request or perform any other action here
+        }
+    });
+</script>
+
+{% endblock %}

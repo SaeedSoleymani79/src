@@ -1,19 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
-class Book(models.Model):
-
-    user        = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    title       = models.CharField(max_length=100)
-    #cover      = models.ImageField()
-    description = models.TextField(null=True) # required
-    summary     = models.TextField(blank=True)
-    author      = models.CharField(max_length=50)
-    
-    states = [('Want to Read','Want to Read') , ('Reading','Reading') , ('Read','Read')]
-    read_states = models.CharField(max_length=12, choices=states , default='Want to Read')
+class UserBookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    google_books_id = models.CharField(max_length=20)  # Use the same length as in Book model
+    status_choices = (
+        ('want_to_read', 'Want to Read'),
+        ('currently_reading', 'Currently Reading'),
+        ('already_read', 'Already Read'),
+    )
+    status = models.CharField(max_length=20, choices=status_choices)
 
     def __str__(self):
-        return self.title
+        return f"{self.user.username} - {self.google_books_id} ({self.status})"

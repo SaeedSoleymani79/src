@@ -18,3 +18,4 @@ class SearchView(View):
             return JsonResponse(users_json, safe=False)
         else:
             return JsonResponse([], safe=False)
+        
