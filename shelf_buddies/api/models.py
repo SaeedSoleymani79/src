@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -15,6 +17,17 @@ class Books(models.Model):
     def __str__(self):
         return self.title
     
+class Rate(models.Model):
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rate = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('book', 'user')
+
+    def __str__(self):
+        return str(self.rate)
 
 class User_Bookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -31,3 +44,19 @@ class User_Bookmark(models.Model):
         if self.reading_status == 'ALREADY_READ':
             self.reading_progress = self.book.total_pages
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.user.username + ' bookmarked '+ self.book.title + ' as ' + self.reading_status
+    
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    review = models.TextField(blank=True, max_length=300)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Feed(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
+    rate = models.ForeignKey(Rate, on_delete=models.CASCADE, null=True)

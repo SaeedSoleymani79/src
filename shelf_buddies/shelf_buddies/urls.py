@@ -20,10 +20,12 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from book.views import home_view
 from authorization.views import login_view, logout_view, signup_view, privacy_policy_view,terms_view, profile_view, edit_profile,follow_user, unfollow_user, followers_view , following_view
+from api.views import feed_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home_view'),
+    path('feed/', feed_view, name='feed_view'),
     path('login/', login_view, name='login_view'),
     path('logout/', logout_view, name='logout'),
     path('profile/<str:username>/', profile_view, name='profile'),

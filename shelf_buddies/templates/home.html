@@ -4,20 +4,12 @@
 <div class="bg-image"></div>
 <div class="bg-overlay"></div>
 
-    {% if request.user.is_authenticated %}
-        <div class="glassy-box" class="avg">
-            <h1>Welcome to Shelf-Buddies</h1>
-            <a href="{% url 'profile' request.user.username %}">{{request.user}}</a>            
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-   {% else %}
-        <div class="glassy-box" class="avg">
-            <h2>Welcome to Shelf-Buddies</h2>
-            <hr>
-            <a href="{% url 'login_view' %}">Login</a>
-            <p>If you don't have an account <a href="{% url 'signup' %}">Sign Up</a></p>
-        </div>
-        {% endif %}
+    <div class="glassy-box" class="avg">
+        <h2>Welcome to Shelf-Buddies</h2>
+        <hr>
+        <a href="{% url 'login_view' %}">Login</a>
+        <p>If you don't have an account <a href="{% url 'signup' %}">Sign Up</a></p>
+    </div>
 
     {% if request.user.is_authenticated %}
         {% for my_object in book %}

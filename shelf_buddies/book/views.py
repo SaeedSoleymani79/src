@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import UserBookmark
 from django.http import JsonResponse
-
+from django.contrib.auth.models import User
+import requests
 from django.conf import settings
 # Create your views here.
 
@@ -11,9 +12,13 @@ def success_url(request):
     return redirect('messages.html')
 
 def home_view(request, *args, **kwargs):
-    return render(request,'home.html')
+    if request.user.is_authenticated:
+        return redirect('feed_view')
+    else:
+        return render(request,'home.html')
+    
 
-import requests
+
 from django.utils.text import slugify
 def search_books(request):
     query = request.GET.get('q')

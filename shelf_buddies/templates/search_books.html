@@ -1,5 +1,6 @@
 <form method="get">
-    <input type="text" name="q" placeholder="Search books...">
+    <input type="text" name="title" placeholder="Title...">
+    <input type="text" name="author" placeholder="Author...">
     <input type="submit" value="Search">
 </form>
 
@@ -7,4 +8,5 @@
     <a href="{% url 'book_detail2' id=book.id %}">{{ book.title }}</a>
     <p>Authors: {{ book.authors }}</p>
     <p>ISBN: {{ book.isbn }}</p>
+    <br>
 {% endfor %}

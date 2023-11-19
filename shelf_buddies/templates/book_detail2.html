@@ -1,10 +1,13 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>{{ book.title }}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  <!-- jQuery library -->
+
 </head>
 <body>
+{% block content %}
     <h1>{{ book.title }}</h1>
     <img src="{{ book.image }}" alt="{{ book.title }} cover">
     <p>Author: {{ book.author }}</p>
@@ -23,6 +26,26 @@
         <p>I read <span id="progress">0</span> out of <span id="total">{{ book.total_pages }}</span>.</p>
         <button id="updateProgress">Update progress</button>
     </div>
+    <br>
+    {% if rating %}
+        Your rating: {{ rating.rate }} out of 5
+        <a href="{% url 'rate_book' google_books_id=book.google_books_id %}">Change your rating</a>
+    {% else %}
+        <a href="{% url 'rate_book' google_books_id=book.google_books_id %}">Rate this book</a>
+    {% endif %}
+    <br>
+    <a href="{% url 'review_book' google_books_id=book.google_books_id %}"> Review </a>
+
+    {% for comment in comments %}
+    <br>
+        {{comment.user.username}}: {{comment.review}}
+    {% empty %}
+        <a href="{% url 'review_book' google_books_id=book.google_books_id %}">Review</a>
+    {% endfor %}
+
+    {% endblock content %}
+
+ 
     <script>
 
     $.ajaxSetup({
@@ -60,6 +83,8 @@
     progressBar.oninput = function() {
         progressText.textContent = this.value;
     }
+
     </script>
+
 </body>
 </html>
