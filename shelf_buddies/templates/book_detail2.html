@@ -7,25 +7,31 @@
 
 </head>
 <body>
+
 {% block content %}
+<div style="margin-left: 20%; padding: 1em;">
     <h1>{{ book.title }}</h1>
     <img src="{{ book.image }}" alt="{{ book.title }} cover">
     <p>Author: {{ book.author }}</p>
     <p>Genre: {{ book.genre }}</p>
     <p>ISBN: {{ book.isbn }}</p>
     <p>Total Pages: {{ book.total_pages }}</p>
-    <button id="bookmarkButton">Bookmark</button>
-    <div id="bookmarkOptions" style="display: none;">
-        <button class="bookmarkOption" data-status="WANT_TO_READ">Want to Read</button>
-        <button class="bookmarkOption" data-status="CURRENTLY_READING">Currently Reading</button>
-        <button class="bookmarkOption" data-status="ALREADY_READ">Already Read</button>
-    </div>
-    <div id="readingProgress" style="display: none;">
-        <label for="progress">Reading progress:</label>
-        <input type="range" id="progressBar" name="progress" min="0" max="{{ book.total_pages }}">
-        <p>I read <span id="progress">0</span> out of <span id="total">{{ book.total_pages }}</span>.</p>
-        <button id="updateProgress">Update progress</button>
-    </div>
+    
+    {% if bookmark %}
+        {{ bookmark.reading_status }}
+        <br>
+        {% if bookmark.reading_status == "CURRENTLY_READING" %}
+            <p> I have read {{ bookmark.reading_progress}} out of {{ book.total_pages}}
+            <br>
+            <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
+        {% else %}
+            <br>
+            <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
+    {% endif %}
+    
     <br>
     {% if rating %}
         Your rating: {{ rating.rate }} out of 5
@@ -45,8 +51,13 @@
 
     {% endblock content %}
 
- 
+</div>
     <script>
+
+    $("#bookmarkButton").click(function(){
+        console.log('Bookmark button clicked');
+        $("#bookmarkOptions").show();
+        });
 
     $.ajaxSetup({
         headers: { "X-CSRFToken": '{{ csrf_token }}' }
@@ -56,24 +67,43 @@
         $("#bookmarkButton").click(function(){
             $("#bookmarkOptions").show();
         });
+    
         $(".bookmarkOption").click(function(){
-            var status = $(this).data('status');
-            $.post("{% url 'bookmark' %}", {'book_id': '{{ book.google_books_id }}', 'reading_status': status}, function(data){
-                alert(data);
-                if (status == 'CURRENTLY_READING') {
-                    $("#readingProgress").show();
-                } else {
-                    $("#readingProgress").hide();
+            var reading_status = $(this).data('status');
+            $.ajax({
+                url: "{% url 'bookmark' %}",
+                type: "POST",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'book_id': '{{ book.google_books_id }}',
+                    'reading_status': reading_status,
+                },
+                success: function(response){
+                    alert(response);
+                    $("#bookmarkOptions").hide();
+                    if (reading_status == 'CURRENTLY_READING') {
+                        $("#readingProgress").show();
+                    }
                 }
             });
         });
+    
         $("#updateProgress").click(function(){
-            var progress = $("#progressBar").val();  // Changed from "#progress" to "#progressBar"
-            $.post("{% url 'bookmark' %}", {'book_id': '{{ book.google_books_id }}', 'reading_status': 'CURRENTLY_READING', 'reading_progress': progress}, function(data){
-                alert(data);
+            var reading_progress = $("#progressBar").val();
+            $.ajax({
+                url: "{% url 'bookmark' %}",
+                type: "POST",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'book_id': '{{ book.google_books_id }}',
+                    'reading_status': 'CURRENTLY_READING',
+                    'reading_progress': reading_progress,
+                },
+                success: function(response){
+                    alert(response);
+                }
             });
-        });    
-            
+        });
     });
 
     

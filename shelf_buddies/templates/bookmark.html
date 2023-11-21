@@ -1,0 +1,17 @@
+<form method="post" action="{% url 'bookmark' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="book_id" value="{{ book.google_books_id }}">
+    <input type="submit" value="Update bookmark">
+</form>
+
+
+<p>{{ bookmark }}</p>
+{% if bookmark %}
+    {{ bookmark.reading_status }}
+    {% if bookmark.reading_status == "CURRENTLY_READING" %}
+        {{ bookmark.reading_progress}}
+    {% endif %}
+{% else %}
+    <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
+{% endif %}

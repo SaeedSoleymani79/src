@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from book.views import home_view
 from authorization.views import login_view, logout_view, signup_view, privacy_policy_view,terms_view, profile_view, edit_profile,follow_user, unfollow_user, followers_view , following_view
-from api.views import feed_view
+from api.views import feed_view, shelf_view, save_random_books
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,5 +42,6 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('books/', include('book.urls')),
     path('chat/', include('chat.urls')),
-
+    path('shelf/', shelf_view, name='shelf'),
+    path('save_random_books/', save_random_books, name='save_random_books'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

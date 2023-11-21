@@ -38,6 +38,11 @@
           rated <a href="{% url 'book_detail2' id=action.book.google_books_id %}">{{ action.book.title }}</a>: 
           <p>{{ action.rate }} out of 5</p>
         </div>
+      {% elif action|class_name == 'User_Bookmark' %}
+      <div style="background-color: #f9f9f9; padding: 10px; margin-top: 10px;">
+        bookmarked <a href="{% url 'book_detail2' id=action.book.google_books_id %}">{{ action.book.title }}</a>: 
+        <p>{{ action.reading_status }}</p>
+      </div>
       {% endif %}
       <div style="display: flex; align-items: center; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid black;">
         <img src="{{ action.book.image }}" style="height: 100px; width: 33.33%;">

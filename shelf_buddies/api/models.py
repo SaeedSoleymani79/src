@@ -32,6 +32,8 @@ class Rate(models.Model):
 class User_Bookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
     READING_STATUS_CHOICES = [
         ('WANT_TO_READ', 'Want to Read'),
         ('CURRENTLY_READING', 'Currently Reading'),

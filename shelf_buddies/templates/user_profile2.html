@@ -192,12 +192,23 @@
             box-shadow: rgb(56, 56, 56) 5px 1px 9px -5px;
             margin-bottom: 15px;
             margin-top: 15px;
-            height: 75px;
+            height: 140px;
+            overflow: auto;
+            white-space: nowrap;
         }
         .book-list-sec {
             justify-content: space-between;
             margin-bottom: 30px;
             margin-top: 30px;
+        }
+
+        .book-list img {
+            width: 50px;
+            height: 80px;
+        }
+
+        .book-list p {
+            font-size: 12px;
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap');
@@ -387,16 +398,37 @@
         <!-- Book Lists -->
         <div class="book-list-sec" style="margin-top: 50px;">        
             <div class="book-list">
-                <img src="book.jpg" alt="Book">
-                <p>Reading</p>
+                <h2 style="margin-bottom: 10px;">Reading</h2>
+                <div style="display: flex; flex-direction: row;">
+                    {% for book in reading_books %}
+                        <div style="margin-right: 20px; text-align: center;">
+                            <img src="{{ book.image }}" alt="Book" style="width: 100px;">
+                            <p>{{ book.title }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
             <div class="book-list">
-                <img src="book.jpg" alt="Book">
-                <p>Want to Read</p>
+                <h2 style="margin-bottom: 10px;">Want to Read</h2>
+                <div style="display: flex; flex-direction: row;">
+                    {% for book in want_to_read_books %}
+                        <div style="margin-right: 20px; text-align: center;">
+                            <img src="{{ book.image }}" alt="Book" style="width: 100px;">
+                            <p>{{ book.title }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
             <div class="book-list">
-                <img src="book.jpg" alt="Book">
-                <p>Already Read</p>
+                <h2>Already Read</h2>
+                <div style="display: flex; flex-direction: row;">
+                    {% for book in already_read_books %}
+                        <div style="margin-right: 20px; text-align: center;">
+                            <img src="{{ book.image }}" alt="Book" style="width: 100px;">
+                            <p>{{ book.title }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

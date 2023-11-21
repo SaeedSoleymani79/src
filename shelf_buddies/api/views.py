@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404, HttpResponse, redirect
 from django.views import View
-from .forms import RateForm, CommentForm
+from .forms import RateForm, CommentForm, BookmarkForm
 from django.conf import settings
 from .models import Books, User_Bookmark, Rate, Comment
-
+import random
 from authorization.models import Userprofile
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 import requests
 
@@ -18,6 +19,7 @@ class BookDetailView(View):
         book = Books.objects.filter(google_books_id=book_id).first()
         rating = Rate.objects.filter(book=book, user=request.user).first()
         comments = Comment.objects.filter(book=book)
+        bookmark = User_Bookmark.objects.filter(book=book, user=request.user).first()
         if not book:
             response = requests.get(f'https://www.googleapis.com/books/v1/volumes/{book_id}?key={settings.GOOGLE_BOOKS_API_KEY}')
             data = response.json()
@@ -40,6 +42,7 @@ class BookDetailView(View):
             'book': book,
             'rating': rating,
             'comments': comments,
+            'bookmark': bookmark,
         }
         return render(request, 'book_detail2.html', context)
     
@@ -99,22 +102,49 @@ def search_books(request):
     return render(request, "search_books.html", {"results": results})
 
 class BookmarkView(View):
-    def post(self, request, *args, **kwargs):
-        book_id = request.POST.get('book_id')
-        reading_status = request.POST.get('reading_status')
-        reading_progress = request.POST.get('reading_progress', 0)
+    def get(self, request, *args, **kwargs):
+        book_id = kwargs.get('book_id')
         book = get_object_or_404(Books, google_books_id=book_id)
         bookmark, created = User_Bookmark.objects.get_or_create(
             user=request.user,
             book=book,
-            defaults={'reading_status': reading_status, 'reading_progress': reading_progress},
+            defaults={'reading_status': 'WANT_TO_READ', 'reading_progress': 0},
         )
-        if not created:
-            bookmark.reading_status = reading_status
-            bookmark.reading_progress = reading_progress
-            bookmark.save()
-        return HttpResponse('Bookmark updated successfully.')
-    
+        form = BookmarkForm(instance=bookmark)
+        return render(request, 'form.html', {'form': form, 'book': book})
+
+    def post(self, request, *args, **kwargs):
+        book_id = request.POST.get('book_id')
+        book = get_object_or_404(Books, google_books_id=book_id)
+        bookmark, created = User_Bookmark.objects.get_or_create(
+            user=request.user,
+            book=book,
+            defaults={'reading_status': 'WANT_TO_READ', 'reading_progress': 0},
+        )
+        form = BookmarkForm(request.POST, instance=bookmark)
+        if form.is_valid():
+            form.save()
+            return HttpResponse('Bookmark updated successfully.')
+        else:
+            return HttpResponse('Invalid data.')
+        
+def bookmark_view(request, google_books_id):
+    book = get_object_or_404(Books, google_books_id=google_books_id)
+    bookmark, created = User_Bookmark.objects.get_or_create(
+        user=request.user,
+        book=book,
+        defaults={'reading_status': 'WANT_TO_READ', 'reading_progress': 0},
+        )
+    print(bookmark)
+    if request.method == 'POST':
+        form = BookmarkForm(request.POST, instance=bookmark)
+        if form.is_valid():
+            form.save()
+            return redirect('book_detail2', id=book.google_books_id)
+    else:
+        form = BookmarkForm(instance=bookmark)  # This line populates the form with the saved data
+
+    return render(request, 'form.html', {'form': form, 'bookmark': bookmark})
 
 @login_required
 def rate_view(request, google_books_id):
@@ -155,13 +185,62 @@ def feed_view(request):
     # Get the actions of the users that the current user is following
     comments = Comment.objects.filter(user__in=following_users)
     rates = Rate.objects.filter(user__in=following_users)
-    # bookmarks = User_Bookmark.objects.filter(user__in=following_users)
+    bookmarks = User_Bookmark.objects.filter(user__in=following_users)
 
     # Combine all actions into one list and sort them by date (newest first)
     actions = sorted(
-        list(comments) + list(rates), #+ list(bookmarks),
+        list(comments) + list(rates) + list(bookmarks),
         key=lambda action: action.created_at,  # Replace with your timestamp field
         reverse=True
     )
 
     return render(request, 'feed.html', {'actions': actions})
+
+
+def shelf_view(request):
+    response = requests.get('https://www.googleapis.com/books/v1/volumes?q={}&key={}'.format('python', settings.GOOGLE_BOOKS_API_KEY))
+    data = response.json()
+    for book in data['items']:
+        if not Books.objects.filter(google_books_id=book['id']).exists():
+            Books.objects.create(
+                google_books_id=book['id'],
+                title=book['volumeInfo']['title'],
+                genre=book['volumeInfo']['categories'][0],
+                author=book['volumeInfo']['authors'][0],
+                isbn=book['volumeInfo']['industryIdentifiers'][0]['identifier'],
+                total_pages=book['volumeInfo']['pageCount'],
+                image=book['volumeInfo']['imageLinks']['thumbnail']
+            )
+    books = Books.objects.all()
+    context = {
+        'books': books
+    }
+    return render(request, 'shelf.html', context)
+
+def save_random_books(request):
+    # Generate a random number of books to fetch (between 1 and 40)
+    num_books = random.randint(1, 40)
+
+    # Fetch the data from the Google Books API
+    response = requests.get('https://www.googleapis.com/books/v1/volumes?q={}&maxResults={}&langRestrict={}&key={}'.format('random', num_books, 'en', settings.GOOGLE_BOOKS_API_KEY))
+    data = response.json()
+
+    # Iterate over the books data
+    for book in data['items']:
+        # Check if the book already exists in the database
+        if not Books.objects.filter(google_books_id=book['id']).exists():
+            # If not, create a new Books object and save it to the database
+            genre = book['volumeInfo']['categories'][0] if 'categories' in book['volumeInfo'] else 'Unknown'
+            total_page = book['volumeInfo']['pageCount'] if 'pageCount' in book['volumeInfo'] else 0
+            Books.objects.create(
+                google_books_id=book['id'],
+                title=book['volumeInfo']['title'],
+                genre=genre,
+                author=book['volumeInfo']['authors'][0],
+                isbn=book['volumeInfo']['industryIdentifiers'][0]['identifier'],
+                total_pages=total_page,
+                image=book['volumeInfo']['imageLinks']['thumbnail']
+            )
+
+    # You can return an HttpResponse here to confirm that the books have been saved
+    return HttpResponse('Random books have been saved to the database.')

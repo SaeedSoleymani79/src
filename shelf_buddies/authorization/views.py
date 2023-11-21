@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext as _
 import datetime
+from api.models import User_Bookmark, Books
 from .forms import registerForm, UserUpdateForm, UserUpdateProfileForm, CustomPasswordResetForm, CustomChangePasswordForm
 from authorization.models import Userprofile, Post
 from django.contrib.auth.models import User
@@ -71,10 +72,13 @@ def profile_view(request, username):
     if created:
         # Set default values for the fields
         profile.followers_count = 0
-        profile.books_read_count = 0
-        profile.books_want_to_read_count = 0
-        profile.books_currently_reading_count = 0
         profile.save()    
+
+    # Fetch the books that the user has bookmarked based on their reading status
+    reading_books = Books.objects.filter(user_bookmark__user=user, user_bookmark__reading_status='CURRENTLY_READING')
+    want_to_read_books = Books.objects.filter(user_bookmark__user=user, user_bookmark__reading_status='WANT_TO_READ')
+    already_read_books = Books.objects.filter(user_bookmark__user=user, user_bookmark__reading_status='ALREADY_READ')
+
     try:
         posts = Post.objects.filter(user=user)
     except Post.DoesNotExist:
@@ -83,6 +87,9 @@ def profile_view(request, username):
     context = {
         'profile': profile,
         'posts': posts,
+        'reading_books': reading_books,
+        'want_to_read_books': want_to_read_books,
+        'already_read_books': already_read_books,
     }
 
     return render(request, 'user_profile2.html', context)

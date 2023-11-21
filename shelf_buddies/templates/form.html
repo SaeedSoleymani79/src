@@ -1,0 +1,26 @@
+<form method="post" id="bookmarkForm">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Bookmark</button>
+</form>
+
+<script>
+    // Get the reading status and reading progress elements
+    var readingStatus = document.querySelector('bookmark.reading_status');
+    var readingProgress = document.querySelector('bookmark.reading_progress').parentNode;
+
+    // Function to show or hide the reading progress field
+    function toggleReadingProgress() {
+        if (readingStatus.value == 'CURRENTLY_READING') {
+            readingProgress.style.display = 'block';
+        } else {
+            readingProgress.style.display = 'none';
+        }
+    }
+
+    // Call the function when the page loads
+    toggleReadingProgress();
+
+    // Call the function when the reading status changes
+    readingStatus.addEventListener('change', toggleReadingProgress);
+</script>
