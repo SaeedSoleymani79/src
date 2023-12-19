@@ -9,155 +9,6 @@
 
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap');
 
-    @media screen and (max-width: 600px) {
-    .navbar {
-        width: 100%;
-        height: auto;
-        position: relative;
-    }
-    .profile {
-        margin-left: 0;
-        width: 100%;
-    }
-    }
-
-        a:hover {
-            transition : 610ms;
-            transform : translateY(-0px);
-            background-color: #fff;
-            color: #0066cc;
-            border: none;
-        }
-
-        body {
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
-            font-family: Roboto, sans-serif;
-        }
-        .navbar {
-            width: 15%;
-            height: 100%;
-            position: fixed;
-            background-color: #f2f2f2;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 1em;
-        }
-        .navbar div {
-            display: flex;
-            flex-direction: column;
-        }
-        .navbar a {
-            text-decoration: none;
-            color: black;
-            margin-bottom: 1em;
-        }
-        .navbar .middle {
-            margin-top: 2em;
-        }
-        .navbar .bottom {
-            margin-top: auto;
-            margin-bottom: 5px;
-        }
-
-        #search-sidebar {
-            margin-left: 30px;
-            position: fixed;
-            width: 200px;
-            height: 100%;
-            overflow: auto;
-            background-color: #f2f2f2;
-            left: 15%; /* Adjust this value to match the width of your navbar */
-            transform: translateX(-100%);
-            transition: transform 5s ease; /* Add transition */
-        }
-        
-        #search-results a{
-            display: block;
-            padding: 10px;
-            margin: 5px 0;
-            color: black;
-            text-decoration: none;
-        }
-
-        #search-results a:hover {
-            background-color: #f2f2f2;
-        }
-                
-        #overlay {
-            display: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 2;
-        }
-        .loader {
-            width: 10px;
-            height: 15px;
-            border-radius: 30%;
-            display: block;
-            margin:20px auto;
-            position: relative;
-            color: #000;
-            box-sizing: border-box;
-            animation: animloader 1s linear infinite alternate;
-          }
-          
-          @keyframes animloader {
-            0% {
-              box-shadow: -38px -12px ,  -14px 0,  14px 0, 38px 0;
-            }
-            33% {
-              box-shadow: -38px 0px, -14px -12px,  14px 0, 38px 0;
-            }
-            66% {
-              box-shadow: -38px 0px , -14px 0, 14px -12px, 38px 0;
-            }
-            100% {
-              box-shadow: -38px 0 , -14px 0, 14px 0 , 38px -12px;
-            }
-          }
-
-
-        .fa {
-        margin-right: 5px;
-        }
-
-        .fa-home {
-        color: #2a2a2a;
-        }
-
-        .fa-search {
-        color: #2a2a2a;
-        }
-
-        .fa-book {
-        color: #2a2a2a;
-        }
-
-        .fa-plus {
-        color: #2a2a2a;
-        }
-
-        .fa-bookmark {
-        color: #2a2a2a;
-        }
-
-        .fa-cog {
-        color: #2a2a2a;
-        }
-
-        .fa-sign-out {
-        color: #2a2a2a;
-        }
-
         .profile {
             margin-left: 15%;
             padding: 20px;
@@ -188,11 +39,12 @@
             align-items: center;
         }
         .book-list {
-            border-radius: 10px;
+            border-radius: 3px;
             box-shadow: rgb(56, 56, 56) 5px 1px 9px -5px;
             margin-bottom: 15px;
             margin-top: 15px;
-            height: 140px;
+            height: 145px;
+            width: 100%;
             overflow: auto;
             white-space: nowrap;
         }
@@ -290,41 +142,8 @@
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <!-- Top Navbar content -->
-        <div>
-            <img src="/static/images/logo.png" alt="Logo">
-            <br><br>
-            <a href="{% url 'profile' request.user.username %}"><i class="fa fa-home"></i> Reader Page</a>
-            <a id="search-link" href="#"><i class="fa fa-search"></i> Search</a>
-            <div id="search-sidebar" style="display: none;">
-                <input type="text" id="search-input" placeholder="Search users...">
-            <div id="search-results">
-            </div>
-            </div>
-            <a href="#"><i class="fa fa-book"></i> My Library</a>
-        </div>
+    {% include 'sidebar.html' %}
     
-        <!-- Middle Navbar content -->
-        <div class="middle">
-            <a href="#"><i class="fa fa-plus"></i> Create New</a>
-            <a href="#"><i class="fa fa-bookmark"></i> Favourite</a>
-        </div>
-    
-        <!-- Bottom Navbar content -->
-        <div class="bottom">
-            <a id='settingslink' href="#"><i class="fa fa-cog"></i> Settings</a>
-            <!-- Settings Modal -->
-            <div id="settingsModal" class="modal" style="display: none;">
-                <div class="modal-content">
-                    <span class="close">×</span>
-                    <a href={% url 'password_change' %}><p>change password</p></a>
-                </div>
-            </div>
-
-            <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Log Out</a>
-        </div>
-    </div>
     <div class="profile">
         <div class="profile-top" style="display: flex; align-items: center;">
             {% if profile.profile_image %}
@@ -396,13 +215,13 @@
         <div class="line"></div>
         
         <!-- Book Lists -->
-        <div class="book-list-sec" style="margin-top: 50px;">        
+        <div class="book-list-sec" style="margin-top: 45px;">        
             <div class="book-list">
                 <h2 style="margin-bottom: 10px;">Reading</h2>
                 <div style="display: flex; flex-direction: row;">
                     {% for book in reading_books %}
                         <div style="margin-right: 20px; text-align: center;">
-                            <img src="{{ book.image }}" alt="Book" style="width: 100px;">
+                            <a href="{% url  'book_detail2' id=book.google_books_id %}" ><img src="{{ book.image }}" alt="Book" style="width: 100px;"></a>
                             <p>{{ book.title }}</p>
                         </div>
                     {% endfor %}
@@ -413,7 +232,7 @@
                 <div style="display: flex; flex-direction: row;">
                     {% for book in want_to_read_books %}
                         <div style="margin-right: 20px; text-align: center;">
-                            <img src="{{ book.image }}" alt="Book" style="width: 100px;">
+                            <a href="{% url  'book_detail2' id=book.google_books_id %}" ><img src="{{ book.image }}" alt="Book" style="width: 100px;"></a>
                             <p>{{ book.title }}</p>
                         </div>
                     {% endfor %}
@@ -424,7 +243,7 @@
                 <div style="display: flex; flex-direction: row;">
                     {% for book in already_read_books %}
                         <div style="margin-right: 20px; text-align: center;">
-                            <img src="{{ book.image }}" alt="Book" style="width: 100px;">
+                            <a href="{% url  'book_detail2' id=book.google_books_id %}" ><img src="{{ book.image }}" alt="Book" style="width: 100px;"></a>
                             <p>{{ book.title }}</p>
                         </div>
                     {% endfor %}

@@ -1,0 +1,10 @@
+appmap_dir: tmp\appmap
+language: python
+name: src
+packages:
+- path: api
+- path: authorization
+- path: book
+- path: shelf_buddies
+- path: chat
+- path: search

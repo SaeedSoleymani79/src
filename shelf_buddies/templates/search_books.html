@@ -1,12 +1,15 @@
-<form method="get">
+<form style="width:40%; margin: auto; padding:10px;" method="get">
     <input type="text" name="title" placeholder="Title...">
     <input type="text" name="author" placeholder="Author...">
     <input type="submit" value="Search">
 </form>
 
+<div style="width:40%; margin: auto; padding:10px;">
 {% for book in results %}
     <a href="{% url 'book_detail2' id=book.id %}">{{ book.title }}</a>
     <p>Authors: {{ book.authors }}</p>
     <p>ISBN: {{ book.isbn }}</p>
+    <p>Source: {{ book.source }}</p>
     <br>
 {% endfor %}
+</div>

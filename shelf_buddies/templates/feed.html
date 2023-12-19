@@ -4,8 +4,8 @@
 {% block content %}
 
 <style>
-
    .profile {
+    background-color: white;
     border-radius: 30px;
     margin-right: 20px;
     height: 150px; /* Adjust as needed */
@@ -22,7 +22,7 @@
   }
 </style>
 
-<div style="width: 40%; margin: 0 auto; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); padding: 20px; font-size: 0.8em;">
+<div style="background-color:white; width: 40%; margin: 0 auto; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); padding: 20px; font-size: 0.8em;">
   <h1 style="font-size: 1.2em;">Your Feed</h1>
   {% for action in actions %}
     <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
@@ -47,23 +47,41 @@
       <div style="display: flex; align-items: center; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid black;">
         <img src="{{ action.book.image }}" style="height: 100px; width: 33.33%;">
         <div style="padding: 10px;">
-          <h3>{{ action.book.title }}</h3>
-          <p>{{ action.book.author }}</p>
+          <h3><a href="{% url 'book_detail2' id=action.book.google_books_id %}">{{ action.book.title }}</a></h3>
+          <p><a href="{% url 'author' author=action.book.author %}" >{{ action.book.author }}</a></p>
           <p>{{ action.book.summary }}</p>
         </div>
-      </div>
-      <div style="display: flex; align-items: center; margin-top: 10px;">
-        {% if action.user_comment %}
-          <p>{{ action.user_comment }}</p>
-        {% endif %}
-        <a href={% url 'profile' user.username %}><img src="{{ user.profile.profile_image.url }}" class="profile" style="height: 50px; width: 50px; margin-right: 10px;"></a>
-        <form>
-          <input type="text" placeholder="Comment">
-        </form>
       </div>
     </div>
   {% empty %}
     <p>No actions to display.</p>
   {% endfor %}
 </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $('.like-button').click(function(){
+        // Toggle the like button style
+        $(this).toggleClass('liked');
+    });
+
+    $('.comment-form').submit(function(e){
+        e.preventDefault();
+
+        // Get the comment text
+        var text = $(this).find('input[name="text"]').val();
+
+        // Create a new comment element
+        var comment = $('<p></p>').text(text);
+
+        // Add the new comment to the page
+        $(this).parent().append(comment);
+
+        // Clear the comment input
+        $(this).find('input[name="text"]').val('');
+    });
+});
+</script>
+
 {% endblock %}

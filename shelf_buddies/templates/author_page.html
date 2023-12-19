@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ author }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .author-profile { margin-bottom: 50px; }
+        .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+        .book { box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); padding: 16px; text-align: center; }
+        .book img { width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="author-profile">
+        <h1 style="text-align: center;">{{ author }}'s work</h1>
+    </div>
+
+    <div class="book-list">
+        {% for book , id in book_ids %}
+            <div class="book">
+                <img src="{{ book.imageLinks.thumbnail }}" alt="{{ book.title }}">
+                <h2><a href="{% url 'book_detail2' id=id %}">{{ book.title }}</a></h2>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

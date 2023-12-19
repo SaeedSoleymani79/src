@@ -1,24 +1,73 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends "auth_base.html" %}
+{% load static %}
 
-<div class="container">
-    <div class="left-side">
-        <img src="/static/images/logo.png" alt="Website Logo">
-            <h2 style="margin-bottom: 70px;">Welcome to Shelf-Buddies</h2>
-    </div>
-    <div class="right-side">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.username.label_tag }} {{ form.username }}
-            {{ form.email.label_tag }} {{ form.email }}
-            {{ form.password1.label_tag }} {{ form.password1 }}
-            {{ form.password2.label_tag }} {{ form.password2 }}
-            <input type="submit" value="Sign Up">
-        </form>
-        <br>
-        <p>By creating an account, you agree to our <a href="{% url 'terms' %}">Terms of Service</a><p>and</p><a href={% url 'privacy_policy' %}> Privacy Policy</a></p>
-        </br>
-    </div>
-</div>
+<head>
+<title>Signup</title>
+</head>
+{% block content %}	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="/static/images/img-01.png" alt="IMG">
+				</div>
+
+				<form class="login100-form validate-form" method="post">
+					{% csrf_token %}
+					<span class="login100-form-title">
+						Member Login
+					</span>
+
+					
+					<div class="wrap-input100 validate-input" data-validate = "Username is required">				
+						<input class="input100" type="text" name="username" id="username" placeholder="Username" required>
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>	
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Email is required">
+						<input class="input100" type="email" name="password" id="password" placeholder="Email" required>
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Password is required">
+						<input class="input100" type="password" name="password1" id="password1" placeholder="Password" required>
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Password2 is required">
+						<input class="input100" type="password" name="password2" id="password2" placeholder="Confirm Password" required>
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn">
+							Create Account
+						</button>
+					</div>
+
+
+					<div style="margin-bottom: 10px;" class="text-center p-t-136">
+						<a class="txt2" href="{% url 'login_view' %}">
+							Have an account? Login
+							<i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
 
 {% endblock %}

@@ -2,55 +2,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ book.title }}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  <!-- jQuery library -->
-
+    <link rel="stylesheet" href='style.css'>
 </head>
 <body>
 
 {% block content %}
-<div style="margin-left: 20%; padding: 1em;">
-    <h1>{{ book.title }}</h1>
-    <img src="{{ book.image }}" alt="{{ book.title }} cover">
-    <p>Author: {{ book.author }}</p>
-    <p>Genre: {{ book.genre }}</p>
-    <p>ISBN: {{ book.isbn }}</p>
-    <p>Total Pages: {{ book.total_pages }}</p>
-    
-    {% if bookmark %}
-        {{ bookmark.reading_status }}
-        <br>
-        {% if bookmark.reading_status == "CURRENTLY_READING" %}
-            <p> I have read {{ bookmark.reading_progress}} out of {{ book.total_pages}}
+<title>{{ book.title }}</title>
+<style>
+    a {
+        color: black;
+    }
+    a:hover {
+        transition : 610ms;
+        transform : translateY(-0px);
+        color: #0066cc;
+        border: none;   
+    }
+
+    .leftside {
+        width: 20%;
+        height: 100vh;
+        display: flex;
+        align-items : center;
+        justify-content : center;
+        background: url("/static/images/bg.png") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+
+    }
+
+    .leftside .image-container {
+        height: 50%;
+        width: 80%;
+    }
+
+    .leftside .image-container img {
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    .rightside {
+        width: 80%;
+        padding: 30px;
+        margin-left: 30px;
+        color: #333;
+        transition: background-color 0.3s ease;
+        height: 100vh;
+        overflow-y: auto; /* This will make the right side scrollable */
+    }
+
+    .rightside h1 {
+        color: #555;
+    }
+
+</style>
+<div style="display: flex; height: 100vh; overflow: hidden;">
+    <div class='leftside'>
+        <div class="image-container">
+            <img src="{{ book.image }}" alt="{{ book.title }} cover" style="height: 100%; width: 100%; object-fit: cover;">
+        </div>
+    </div>
+
+    <div class='rightside'>
+        <h1>{{ book.title }}</h1>
+        <p>Author: <a href="{% url 'author' author=book.author %}" >{{ book.author }}</a></p>
+        <p>Genre: {{ book.genre }}</p>
+        <p>ISBN: {{ book.isbn }}</p>
+        <p>Total Pages: {{ book.total_pages }}</p>
+        
+        {% if bookmark %}
+            {{ bookmark.reading_status }}
             <br>
-            <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
+            <form method="POST" action="{% url 'delete' google_books_id=bookmark.book.google_books_id %}">
+                {% csrf_token %}
+                <input type="submit" value="Delete Bookmark">
+            </form>
+
+            {% if bookmark.reading_status == "CURRENTLY_READING" %}
+                <p> I have read {{ bookmark.reading_progress}} out of {{ book.total_pages}}
+                <br>
+                <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> modify bookmark </a>
+            {% else %}
+                <br>
+                <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> modify bookmark </a>
+            {% endif %}
         {% else %}
-            <br>
             <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
         {% endif %}
-    {% else %}
-        <a href="{% url 'bookmark' google_books_id=book.google_books_id %}"> bookmark </a>
-    {% endif %}
-    
-    <br>
-    {% if rating %}
-        Your rating: {{ rating.rate }} out of 5
-        <a href="{% url 'rate_book' google_books_id=book.google_books_id %}">Change your rating</a>
-    {% else %}
-        <a href="{% url 'rate_book' google_books_id=book.google_books_id %}">Rate this book</a>
-    {% endif %}
-    <br>
-    <a href="{% url 'review_book' google_books_id=book.google_books_id %}"> Review </a>
+        
+        <br>
+        {% if rating %}
+            Your rating: {{ rating.rate }} out of 5
+            <a href="{% url 'rate_book' google_books_id=book.google_books_id %}">Change your rating</a>
+        {% else %}
+            <a href="{% url 'rate_book' google_books_id=book.google_books_id %}">Rate this book</a>
+        {% endif %}
+        <br>
+        <a href="{% url 'review_book' google_books_id=book.google_books_id %}"> Review </a>
 
-    {% for comment in comments %}
-    <br>
-        {{comment.user.username}}: {{comment.review}}
-    {% empty %}
-        <a href="{% url 'review_book' google_books_id=book.google_books_id %}">Review</a>
-    {% endfor %}
+        {% for comment in comments %}
+        <br>
+            <a href="{% url 'profile' comment.user.username %}">{{comment.user.username}}</a>: {{comment.review}}
+        {% endfor %}
 
-    {% endblock content %}
-
+        {% endblock content %}
+    <div>
 </div>
     <script>
 

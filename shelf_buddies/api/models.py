@@ -56,9 +56,3 @@ class Comment(models.Model):
     review = models.TextField(blank=True, max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
-class Feed(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Books, on_delete=models.CASCADE, null=True, blank=True)
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
-    rate = models.ForeignKey(Rate, on_delete=models.CASCADE, null=True)

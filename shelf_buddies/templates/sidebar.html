@@ -1,0 +1,189 @@
+<style>
+    
+    @media screen and (max-width: 600px) {
+        .navbar {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+        .profile {
+            margin-left: 0;
+            width: 100%;
+        }
+        }
+    
+        a:hover {
+            transition : 610ms;
+            transform : translateY(-0px);
+            background-color: #fff;
+            color: #0066cc;
+            border: none;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Roboto, sans-serif;
+        }
+
+                
+        #overlay {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+        .loader {
+            width: 10px;
+            height: 15px;
+            border-radius: 30%;
+            display: block;
+            margin:20px auto;
+            position: relative;
+            color: #000;
+            box-sizing: border-box;
+            animation: animloader 1s linear infinite alternate;
+            }
+            
+            @keyframes animloader {
+            0% {
+                box-shadow: -38px -12px ,  -14px 0,  14px 0, 38px 0;
+            }
+            33% {
+                box-shadow: -38px 0px, -14px -12px,  14px 0, 38px 0;
+            }
+            66% {
+                box-shadow: -38px 0px , -14px 0, 14px -12px, 38px 0;
+            }
+            100% {
+                box-shadow: -38px 0 , -14px 0, 14px 0 , 38px -12px;
+            }
+            }
+
+
+        .fa {
+        margin-right: 5px;
+        }
+
+        .fa-home {
+        color: #2a2a2a;
+        }
+
+        .fa-search {
+        color: #2a2a2a;
+        }
+
+        .fa-book {
+        color: #2a2a2a;
+        }
+
+        .fa-plus {
+        color: #2a2a2a;
+        }
+
+        .fa-bookmark {
+        color: #2a2a2a;
+        }
+
+        .fa-cog {
+        color: #2a2a2a;
+        }
+
+        .fa-sign-out {
+        color: #2a2a2a;
+        }
+    .navbar {
+        width: 15%;
+        height: 100%;
+        position: fixed;
+        background-color: #f2f2f2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1em;
+    }
+    .navbar div {
+        display: flex;
+        flex-direction: column;
+    }
+    .navbar a {
+        text-decoration: none;
+        color: black;
+        margin-bottom: 1em;
+    }
+    .navbar .middle {
+        margin-top: 2em;
+    }
+    .navbar .bottom {
+        margin-top: auto;
+        margin-bottom: 5px;
+    }
+
+    #search-sidebar {
+        margin-left: 30px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+        overflow: auto;
+        background-color: #f2f2f2;
+        left: 15%; /* Adjust this value to match the width of your navbar */
+        transform: translateX(-100%);
+        transition: transform 5s ease; /* Add transition */
+    }
+    
+    #search-results a{
+        display: block;
+        padding: 10px;
+        margin: 5px 0;
+        color: black;
+        text-decoration: none;
+    }
+
+    #search-results a:hover {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<div class="navbar">
+    <!-- Top Navbar content -->
+    <div>
+        <img src="/static/images/logo.png" alt="Logo">
+        <br><br>
+        <a href="{% url 'profile' request.user.username %}"><i class="fa fa-home"></i> Reader's Profile</a>
+        <a id="search-link" href="#"><i class="fa fa-search"></i> Search for friends</a>
+        <div id="search-sidebar" style="display: none;">
+            <input type="text" id="search-input" placeholder="Search users...">
+        <div id="search-results">
+        </div>
+        </div>
+        <a href="{% url 'search_books' %}"><i class="fa fa-book"></i> Explore Books </a>
+    </div>
+
+    <!-- Middle Navbar content -->
+    <div class="middle">
+        <a href="{% url 'feed_view' %}"><i class="fa fa-bookmark"></i> Feed </a>
+        <a href="{% url 'shelf' %}"><i class="fa fa-bookmark"></i> Shelf </a>
+    </div>
+
+
+    <!-- Bottom Navbar content -->
+    <div class="bottom">
+        <a class="primary" onclick="window.dialog.showModal();" id='settingslink' href="#"><i class="fa fa-cog"></i> Settings</a>
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <a href={% url 'password_change' %}><p>change password</p></a>
+            </div>
+        </div>
+
+        <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Log Out</a>
+    </div>
+</div>

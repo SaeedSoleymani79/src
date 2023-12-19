@@ -9,8 +9,10 @@ from django.utils.translation import gettext as _
 import datetime
 from api.models import User_Bookmark, Books
 from .forms import registerForm, UserUpdateForm, UserUpdateProfileForm, CustomPasswordResetForm, CustomChangePasswordForm
-from authorization.models import Userprofile, Post
+from authorization.models import Userprofile
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your views here.
 
@@ -43,7 +45,14 @@ def logout_view(request):
     logout(request)
     return redirect("home_view")
 
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Userprofile.objects.create(user=instance)
 
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 
 # signup_view() will handle registering new users
@@ -79,14 +88,9 @@ def profile_view(request, username):
     want_to_read_books = Books.objects.filter(user_bookmark__user=user, user_bookmark__reading_status='WANT_TO_READ')
     already_read_books = Books.objects.filter(user_bookmark__user=user, user_bookmark__reading_status='ALREADY_READ')
 
-    try:
-        posts = Post.objects.filter(user=user)
-    except Post.DoesNotExist:
-        posts = []  # Provide an empty list as a default value when no posts are found
 
     context = {
         'profile': profile,
-        'posts': posts,
         'reading_books': reading_books,
         'want_to_read_books': want_to_read_books,
         'already_read_books': already_read_books,
